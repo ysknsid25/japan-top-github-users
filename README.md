@@ -1,7 +1,6 @@
 # Japan Top GitHub Users
 
-元ネタは[@yusukebe](https://github.com/yusukebe)さんの[top-github-users-only-japan](https://github.com/yusukebe/top-github-users-only-japan)です。さらに本家は[Top
-GitHub Users By Country](https://github.com/gayanvoice/top-github-users")です。
+元ネタは[@yusukebe](https://github.com/yusukebe)さんの[top-github-users-only-japan](https://github.com/yusukebe/top-github-users-only-japan)です。さらに本家は[Top GitHub Users By Country](https://github.com/gayanvoice/top-github-users")です。
 
 元々は、
 
