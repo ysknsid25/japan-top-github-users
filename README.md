@@ -13,3 +13,22 @@ Usersの一覧を作成していたものがありました。が、Node
 
 なので、もし気に入ったら[本家のレポジトリ](https://github.com/gayanvoice/top-github-users)や[yusukebeさんのリポジトリ](https://github.com/yusukebe/top-github-users-only-japan)に
 ⭐ するのをお忘れなく。
+
+# Getting Start
+
+## 1. 🔒 Create a new personal access token with repo workflow admin:org user options
+
+Go to Settings -> Developer settings -> Personal Access Tokens and click on
+Generate new token button. Give it any name and select `repo` `workflow`
+`admin:org` -> `read:org` `user` -> `read:user` options and click on Generate
+token button. ✂️ Copy the token.
+
+## 2. set env
+
+Save the token as an environment variable named `CUSTOM_TOKEN`
+
+## 3. run
+
+```bash
+deno task exec
+```
