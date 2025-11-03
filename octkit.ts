@@ -163,7 +163,7 @@ export async function fetchGitHubUsers({
         }
         pageCount++;
 
-        // TODO: 70件目でどれだけインターバルを伸ばしても制限に引っかかってしまうので、キリ良く50件取ったあとで止める。そもそもrate limitが取れないのか？
+        // TODO: https://github.com/ysknsid25/japan-top-github-users/issues/1
         if (pageCount == 5) {
             break;
         }
