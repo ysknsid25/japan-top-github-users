@@ -1,50 +1,50 @@
 import { Octokit } from "https://esm.sh/@octokit/core";
 
 export interface User {
-    login: string;
-    avatarUrl: string;
-    name: string | null;
-    location: string | null;
-    company: string | null;
-    twitterUsername: string | null;
-    isGitHubStar: boolean;
-    followers: {
-        totalCount: number;
+  login: string;
+  avatarUrl: string;
+  name: string | null;
+  location: string | null;
+  company: string | null;
+  twitterUsername: string | null;
+  isGitHubStar: boolean;
+  followers: {
+    totalCount: number;
+  };
+  contributionsCollection: {
+    contributionCalendar: {
+      totalContributions: number;
     };
-    contributionsCollection: {
-        contributionCalendar: {
-            totalContributions: number;
-        };
-        restrictedContributionsCount: number;
-    };
+    restrictedContributionsCount: number;
+  };
 }
 
 interface PageInfo {
-    endCursor: string;
-    hasNextPage: boolean;
+  endCursor: string;
+  hasNextPage: boolean;
 }
 
 interface GraphQLResponse {
-    search: {
-        edges: {
-            node: User;
-        }[];
-        pageInfo: PageInfo;
-    };
+  search: {
+    edges: {
+      node: User;
+    }[];
+    pageInfo: PageInfo;
+  };
 }
 
 // fetchGitHubUsers関数の引数の型定義
 export interface FetchUsersParams {
-    octokit: Octokit;
+  octokit: Octokit;
 }
 
 // GraphQLクエリを生成する関数
 const getQuery = (cursor: string | null) => {
-    const after = cursor ? `"${cursor}"` : null;
-    const locations = "location:japan sort:followers-desc followers:>64";
-    const numberOfUsers = 10;
+  const after = cursor ? `"${cursor}"` : null;
+  const locations = "location:japan sort:followers-desc followers:>64";
+  const numberOfUsers = 10;
 
-    return `query {
+  return `query {
     search(type: USER, query:"${locations}", first:${numberOfUsers}, after:${after}) {
       edges {
         node {
@@ -80,11 +80,11 @@ const getQuery = (cursor: string | null) => {
  * 1秒から5秒のランダムな時間待機する
  */
 const randomDelay = () => {
-    const randomWaitTime = Math.floor(Math.random() * 4000) + 1000; // 1000ms to 4999ms
-    console.log(
-        `Waiting for ${randomWaitTime / 1000} seconds before next fetch...`
-    );
-    return new Promise((res) => setTimeout(res, randomWaitTime));
+  const randomWaitTime = Math.floor(Math.random() * 4000) + 1000; // 1000ms to 4999ms
+  console.log(
+    `Waiting for ${randomWaitTime / 1000} seconds before next fetch...`,
+  );
+  return new Promise((res) => setTimeout(res, randomWaitTime));
 };
 
 /**
@@ -94,35 +94,33 @@ const randomDelay = () => {
  * @returns GraphQLレスポンス
  */
 async function graphqlWithRetry<T>(
-    octokit: Octokit,
-    query: string
+  octokit: Octokit,
+  query: string,
 ): Promise<T> {
-    const maxRetries = 5;
-    const defaultBaseDelay = 30000; // デフォルトは30秒
-    const envDelay = Deno.env.get("RETRY_BASE_DELAY_MS");
-    const parsedEnvDelay = envDelay ? parseInt(envDelay, 10) : NaN;
-    const baseDelay = !isNaN(parsedEnvDelay) ? parsedEnvDelay : defaultBaseDelay;
+  const maxRetries = 5;
+  const defaultBaseDelay = 30000; // デフォルトは30秒
+  const envDelay = Deno.env.get("RETRY_BASE_DELAY_MS");
+  const parsedEnvDelay = envDelay ? parseInt(envDelay, 10) : NaN;
+  const baseDelay = !isNaN(parsedEnvDelay) ? parsedEnvDelay : defaultBaseDelay;
 
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-            return await octokit.graphql<T>(query);
-        } catch (error) {
-            if (attempt === maxRetries) {
-                console.error("Max retries reached. Failing permanently.");
-                throw error;
-            }
-            const delayTime = baseDelay * 2 ** (attempt - 1);
-            console.warn(
-                `Attempt ${attempt} failed. Retrying in ${
-                    delayTime / 1000
-                }s...`,
-                error
-            );
-            await new Promise((res) => setTimeout(res, delayTime));
-        }
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await octokit.graphql<T>(query);
+    } catch (error) {
+      if (attempt === maxRetries) {
+        console.error("Max retries reached. Failing permanently.");
+        throw error;
+      }
+      const delayTime = baseDelay * 2 ** (attempt - 1);
+      console.warn(
+        `Attempt ${attempt} failed. Retrying in ${delayTime / 1000}s...`,
+        error,
+      );
+      await new Promise((res) => setTimeout(res, delayTime));
     }
-    // この行には到達しないはずだが、型チェックのためにエラーを投げる
-    throw new Error("GraphQL request failed after multiple retries.");
+  }
+  // この行には到達しないはずだが、型チェックのためにエラーを投げる
+  throw new Error("GraphQL request failed after multiple retries.");
 }
 
 /**
@@ -131,32 +129,32 @@ async function graphqlWithRetry<T>(
  * @returns 全てのユーザー情報
  */
 export async function fetchGitHubUsers({
-    octokit,
+  octokit,
 }: FetchUsersParams): Promise<User[]> {
-    let allUsers: User[] = [];
-    let cursor: string | null = null;
-    let hasNextPage = true;
-    let pageCount = 0;
+  let allUsers: User[] = [];
+  let cursor: string | null = null;
+  let hasNextPage = true;
+  let pageCount = 0;
 
-    while (hasNextPage) {
-        console.log(`🔖 Fetching page ${pageCount + 1}...`);
-        const query = getQuery(cursor);
-        const response = await graphqlWithRetry<GraphQLResponse>(
-            octokit,
-            query
-        );
+  while (hasNextPage) {
+    console.log(`🔖 Fetching page ${pageCount + 1}...`);
+    const query = getQuery(cursor);
+    const response = await graphqlWithRetry<GraphQLResponse>(
+      octokit,
+      query,
+    );
 
-        const users = response.search.edges.map((edge) => edge.node);
-        allUsers = allUsers.concat(users);
+    const users = response.search.edges.map((edge) => edge.node);
+    allUsers = allUsers.concat(users);
 
-        hasNextPage = response.search.pageInfo.hasNextPage;
-        cursor = response.search.pageInfo.endCursor;
+    hasNextPage = response.search.pageInfo.hasNextPage;
+    cursor = response.search.pageInfo.endCursor;
 
-        if (hasNextPage) {
-            await randomDelay();
-        }
-        pageCount++;
+    if (hasNextPage) {
+      await randomDelay();
     }
+    pageCount++;
+  }
 
-    return allUsers;
+  return allUsers;
 }
