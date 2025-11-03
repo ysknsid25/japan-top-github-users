@@ -37,8 +37,6 @@ export function generateMarkdownTable(
   table += `\t</tr>\n`;
 
   for (const [index, user] of users.entries()) {
-    if (index >= 1000) break;
-
     const valueCell = metric.valueExtractor(user);
 
     table += `\t<tr>\n`;
@@ -47,8 +45,10 @@ export function generateMarkdownTable(
     table += `\t\t\t<a href="https://github.com/${user.login}">\n`;
     table +=
       `\t\t\t\t<img src="${user.avatarUrl}" width="24" alt="Avatar of ${user.login}"> ${user.login}\n`;
-    table += `\t\t\t</a><br/>\n`;
-    table += `\t\t\t${formatMarkdown.getName(user.name)}\n`;
+    table += `\t\t\t</a>\n`;
+    if (formatMarkdown.getName(user.name)) {
+      table += `\t\t\t<br/>${formatMarkdown.getName(user.name)}\n`;
+    }
     table += `\t\t</td>\n`;
     table += `\t\t<td>${formatMarkdown.getCompany(user.company)}</td>\n`;
     table += `\t\t<td>${user.isGitHubStar ? "⭐" : ""}</td>\n`;

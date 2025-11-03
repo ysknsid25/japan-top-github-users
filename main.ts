@@ -8,6 +8,7 @@ import { TableMetric, writeMarkdownFile } from "./write-file.ts";
 
 if (import.meta.main) {
   try {
+    const startTime = performance.now();
     const token = Deno.env.get("CUSTOM_TOKEN");
     if (!token) {
       console.error("🚨 Error: CUSTOM_TOKEN is not set.");
@@ -77,6 +78,9 @@ if (import.meta.main) {
     console.log(
       "\n✅ All markdown files have been generated successfully!",
     );
+    const endTime = performance.now();
+    const executionTime = (endTime - startTime) / 1000;
+    console.log(`\n⏱️ Execution time: ${executionTime.toFixed(2)} seconds`);
   } catch (error) {
     console.error("An error occurred:", error);
     Deno.exit(1);
