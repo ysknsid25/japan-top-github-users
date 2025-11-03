@@ -77,10 +77,10 @@ const getQuery = (cursor: string | null) => {
 };
 
 /**
- * 1秒から5秒のランダムな時間待機する
+ * ランダムな時間待機する
  */
 const randomDelay = () => {
-    const randomWaitTime = Math.floor(Math.random() * 4000) + 5000; // 5000ms to 9999ms
+    const randomWaitTime = Math.floor(Math.random() * 4000) + 1000;
     console.log(
         `Waiting for ${randomWaitTime / 1000} seconds before next fetch...`
     );
@@ -98,7 +98,7 @@ async function graphqlWithRetry<T>(
     query: string
 ): Promise<T> {
     const maxRetries = 5;
-    const defaultBaseDelay = 60000; // デフォルトは60秒
+    const defaultBaseDelay = 30000;
     const envDelay = Deno.env.get("RETRY_BASE_DELAY_MS");
     const parsedEnvDelay = envDelay ? parseInt(envDelay, 10) : NaN;
     const baseDelay = !isNaN(parsedEnvDelay)
@@ -163,8 +163,8 @@ export async function fetchGitHubUsers({
         }
         pageCount++;
 
-        // GitHubのGraphQLはどっちみち1000件までしか取得できない(=全ユーザーは並べられない)ので、なら500件で切ってもいいやという考え
-        if (pageCount == 49) {
+        // TODO: 70件目でどれだけインターバルを伸ばしても制限に引っかかってしまうので、キリ良く50件取ったあとで止める。そもそもrate limitが取れないのか？
+        if (pageCount == 5) {
             break;
         }
     }

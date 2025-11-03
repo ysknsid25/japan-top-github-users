@@ -2,8 +2,8 @@ name: Generate Rankings
 
 on:
   workflow_dispatch:
-  #schedule:
-  #- cron: "0 0 1 * *" # 毎月1日AM9時 (JST)
+  schedule:
+    - cron: "0 0 * * *" # 毎日午前0時 (UTC) 
 
 permissions:
   contents: write
