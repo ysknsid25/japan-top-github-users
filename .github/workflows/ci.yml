@@ -28,6 +28,8 @@ jobs:
         run: deno lint
 
       - name: Run tests
+        env:
+          RETRY_BASE_DELAY_MS: 1000
         run: deno test --allow-read --allow-net --allow-env
 
       - name: Run formatter

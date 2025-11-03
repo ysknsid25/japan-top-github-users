@@ -98,7 +98,10 @@ async function graphqlWithRetry<T>(
     query: string
 ): Promise<T> {
     const maxRetries = 5;
-    const baseDelay = 2000; // 2秒から開始
+    const defaultBaseDelay = 30000; // デフォルトは30秒
+    const envDelay = Deno.env.get("RETRY_BASE_DELAY_MS");
+    const parsedEnvDelay = envDelay ? parseInt(envDelay, 10) : NaN;
+    const baseDelay = !isNaN(parsedEnvDelay) ? parsedEnvDelay : defaultBaseDelay;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
