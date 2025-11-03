@@ -137,7 +137,11 @@ export async function fetchGitHubUsers({
   let pageCount = 0;
 
   while (hasNextPage) {
-    console.log(`🔖 Fetching page ${pageCount + 1}...`);
+    console.log(
+      `🔖 Now fetched users count is ${allUsers.length}. Fetching page ${
+        pageCount + 1
+      }...`,
+    );
     const query = getQuery(cursor);
     const response = await graphqlWithRetry<GraphQLResponse>(
       octokit,
